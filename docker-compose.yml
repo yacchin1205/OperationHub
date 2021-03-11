@@ -40,6 +40,7 @@ services:
             DOMAINS: "${SERVER_NAME:-${HOSTNAME}} -> http://jupyterhub:8000"
             #STAGE: 'production'
             CLIENT_MAX_BODY_SIZE: '100M'
+            WEBSOCKET: 'true'
         volumes:
             - https-portal-data:/var/lib/https-portal
 
