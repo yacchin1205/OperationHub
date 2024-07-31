@@ -14,12 +14,33 @@ services:
     networks:
       - backend
 
-  nbsearch-solr-proxy:
+  nbsearch-solr-base-proxy:
     build:
       context: ./images/nbsearch-solr-proxy
     depends_on:
       - nbsearch-solr
     restart: always
+    networks:
+      - backend
+
+  nbsearch-solr-proxy:
+    image: yacchin1205/oauth2-proxy:jupyterhub
+    depends_on:
+      - nbsearch-solr-base-proxy
+    restart: always
+    command:
+      - --http-address=0.0.0.0:80
+      - --proxy-prefix=/services/solr/oauth2
+      - --upstream=http://nbsearch-solr-base-proxy:80/
+      - --provider=jupyterhub
+      - --client-id=service-solr
+      - --client-secret=0123456789ABCDEFGHIJKLMN
+      - --cookie-secret=0123456789ABCDEF
+      - --login-url=https://xxx.xxx.xxx.xxx/hub/api/oauth2/authorize
+      - --redeem-url=http://jupyterhub:8000/hub/api/oauth2/token
+      - --profile-url=http://jupyterhub:8000/hub/api/user
+      - --validate-url=http://jupyterhub:8000/hub/api/user
+      - --email-domain=*
     networks:
       - backend
 
