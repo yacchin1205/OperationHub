@@ -37,6 +37,14 @@ if enable_jenkins is not None and bool(strtobool(enable_jenkins)):
         "redirect_uris": [f"https://{server_name}/services/jenkins/securityRealm/finishLogin"],
     })
 
+enable_zabbix = os.environ.get('ZABBIX_ENABLE_OIDC_SERVICE', None)
+if enable_zabbix is not None and bool(strtobool(enable_zabbix)):
+    oidc_services.append({
+        "oauth_client_id": os.environ['ZABBIX_OAUTH_CLIENT_ID'],
+        "api_token": os.environ['ZABBIX_OAUTH_CLIENT_SECRET'],
+        "redirect_uris": [f"https://{server_name}/services/zabbix/oidc/callback"], # TODO: Check this
+    })
+
 if len(oidc_services) > 0:
     configure_jupyterhub_oidcp(
         c,

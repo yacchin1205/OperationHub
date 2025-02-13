@@ -1,0 +1,71 @@
+version: '3.5'
+
+volumes:
+  zabbix_postgres_data_vol:
+    external: false
+
+services:
+  zabbix-postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: zabbix
+      POSTGRES_PASSWORD: zabbix_pwd
+      POSTGRES_DB: zabbix
+    volumes:
+      - zabbix_postgres_data_vol:/var/lib/postgresql/data
+    restart: always
+    networks:
+      - backend
+
+  zabbix-snmptraps:
+    image: zabbix/zabbix-snmptraps:alpine-latest
+    ports:
+      - 162:1162/udp
+    restart: always
+    networks:
+      - backend
+
+  zabbix-server:
+    image: zabbix/zabbix-server-pgsql:alpine-latest
+    depends_on:
+      - zabbix-postgres
+    environment:
+      DB_SERVER_HOST: zabbix-postgres
+      POSTGRES_USER: zabbix
+      POSTGRES_PASSWORD: zabbix_pwd
+      POSTGRES_DB: zabbix
+    restart: always
+    networks:
+      - backend
+
+  zabbix-web:
+    image: zabbix/zabbix-web-apache-pgsql:alpine-latest
+    environment:
+      DB_SERVER_HOST: zabbix-postgres
+      POSTGRES_USER: zabbix
+      POSTGRES_PASSWORD: zabbix_pwd
+      POSTGRES_DB: zabbix
+      ZBX_SERVER_HOST: zabbix-server
+      PHP_TZ: JST
+    restart: always
+    networks:
+      - backend
+
+  zabbix-web-proxy:
+    build:
+      context: ./images/zabbix-web-proxy
+    depends_on:
+      - zabbix-web
+    restart: always
+    networks:
+      - backend
+
+  jupyterhub:
+    environment:
+      ZABBIX_ENABLE_OIDC_SERVICE: "1"
+      ZABBIX_OAUTH_CLIENT_ID: ${ZABBIX_OAUTH_CLIENT_ID:-zabbix_oauth_client_changeme}
+      ZABBIX_OAUTH_CLIENT_SECRET: ${ZABBIX_OAUTH_CLIENT_SECRET:-zabbix_oauth_secret_changeme}
+      SERVER_NAME: "${SERVER_NAME}"
+    volumes:
+      - './config/oidc/jupyterhub_config.py:/jupyterhub_config.d/oidc.py:ro'
+      - './config/zabbix/jupyterhub_config.py:/jupyterhub_config.d/zabbix.py:ro'
