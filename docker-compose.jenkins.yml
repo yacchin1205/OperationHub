@@ -1,6 +1,3 @@
-volumes:
-  jenkins_home_vol: {}
-
 services:
   jenkins:
     build: ./images/jenkins
@@ -13,7 +10,8 @@ services:
     restart: on-failure
     volumes:
     - /etc/localtime:/etc/localtime:ro
-    - jenkins_home_vol:/var/jenkins_home
+    - /var/lib/jenkins:/var/jenkins_home
+    - /var/lib/jupyterhub/share/jenkins-jobs:/var/jenkins_home/jobs
     - /var/run/docker.sock:/var/run/docker.sock
     - ${USERS_DIR:-/home/user-notebooks}:/home/user-notebooks:ro
 
@@ -33,5 +31,4 @@ services:
       JENKINS_OAUTH_CLIENT_SECRET: ${JENKINS_OAUTH_CLIENT_SECRET:-jenkins_oauth_secret_changeme}
       SERVER_NAME: "${SERVER_NAME}"
     volumes:
-      - './config/oidc/jupyterhub_config.py:/jupyterhub_config.d/oidc.py:ro'
       - './config/jenkins/jupyterhub_config.py:/jupyterhub_config.d/jenkins.py:ro'

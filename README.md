@@ -169,13 +169,16 @@ You should set the following items.
 - Client id - (random string) of JENKINS_OAUTH_CLIENT_ID
 - Client secret - (random string) of JENKINS_OAUTH_CLIENT_SECRET
 - Configuration mode - `Discovery via well-known endpoint`
-  - Well-known configuration endpoint - `http://jupyterhub:8000/services/oidcp/internal/.well-known/openid-configuration`
+  - Well-known configuration endpoint - `http://jupyterhub:8000/services/oidcp-jenkins/internal/.well-known/openid-configuration`
   - Advanced > Override scopes - `openid email`
 - Advanced configuration > User fields
   - User name field name - `sub`
   - Username case sensitivity - `Case sensitive`
   - Full name field name - `name`
   - Email field name - `email`
+
+The settings below should be change after you have confirmed that the login works.
+
 - Authorization - Logged-in users can do anything
 - Allow anonymous read access - Unchecked
 
