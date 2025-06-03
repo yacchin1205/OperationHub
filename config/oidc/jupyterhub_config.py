@@ -30,6 +30,14 @@ if enable_nbsearch is not None and bool(strtobool(enable_nbsearch)):
         "redirect_uris": [f"https://{server_name}/services/solr/oauth2/callback"],
     })
 
+enable_asciinema = os.environ.get('ASCIINEMA_ENABLE_OIDC_SERVICE', None)
+if enable_asciinema is not None and bool(strtobool(enable_asciinema)):
+    oidc_services.append({
+        "oauth_client_id": os.environ['ASCIINEMA_OAUTH_CLIENT_ID'],
+        "api_token": os.environ['ASCIINEMA_OAUTH_CLIENT_SECRET'],
+        "redirect_uris": [f"https://{server_name}/services/asciinema/oauth2/callback"],
+    })
+
 if len(oidc_services) > 0:
     configure_jupyterhub_oidcp(
         c,

@@ -4,3 +4,6 @@
 [submodule "images/ep_weave/ep_weave"]
 	path = images/ep_weave/ep_weave
 	url = https://github.com/NII-cloud-operation/ep_weave.git
+[submodule "images/asciinema/asciinema-server"]
+	path = images/asciinema/asciinema-server
+	url = https://github.com/asciinema/asciinema-server.git
